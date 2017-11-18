@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title:  "Mergesort"
 categories: sorting
 permalink: mergesort

@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title:  "Flip Puzzle"
 categories: problems
 permalink: flip_puzzle

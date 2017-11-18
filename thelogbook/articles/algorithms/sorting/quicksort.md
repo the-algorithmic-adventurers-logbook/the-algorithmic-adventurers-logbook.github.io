@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title:  "Quicksort"
 categories: sorting
 permalink: quicksort

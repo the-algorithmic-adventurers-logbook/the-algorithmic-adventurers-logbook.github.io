@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: article
 title:  "Disjoint Sets"
 categories: structures
 permalink: disjoint_sets
