@@ -1,5 +1,5 @@
 ---
-<!-- layout: article -->
+layout: default
 title:  "Dijkstra's Algorithm"
 categories: graphs
 permalink: dijkstra
