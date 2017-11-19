@@ -3,7 +3,7 @@
 
 // Banner Colors
 
-$banner_background_image: url(../images/banner_noise.png);
+$banner_background_image: url(../images/banner/noise_0.png);
 $banner_background_color: #4276B6;
 $banner_border_color: darken($banner_background_color, 10%);
 $banner_title_color: darken($banner_background_color, 20%);
@@ -22,7 +22,7 @@ $article_background_color: #FBFBFB;
 $article_border_color: darken($article_background_color, 20%);
 
 // The page banner
-header
+header#banner
 {
   // The banner is over everything in the page
   z-index: 100;
