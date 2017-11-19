@@ -6,7 +6,6 @@
 
     <!-- Cascading Style Sheets (CSS) for Article -->
     <link rel="stylesheet" href="/assets/css/article_style.css"/>
-
   </head>
 
   <!-- Page Content -->
@@ -17,17 +16,11 @@
       <h1> {{ site.title }} </h1>
     </header>
 
-    <!-- Zone where the page content will appear -->
-    <div id=container>
+		<div>
+			<!-- LIQUID: Import the page content -->
+			{{ content }}
 
-      <!-- The zone where the article goes, structured as a paper sheet -->
-      <section id=article>
-
-        <!-- LIQUID: Import the article content -->
-        {{ content }}
-      </section>
-
-      <!-- Page footer after the article ends -->
+			<!-- Page footer after the content ends -->
       <footer>
         <p>
           <small>
@@ -35,6 +28,6 @@
           </small>
         </p>
       </footer>
-    </div>
+		</div>
   </body>
 </html>
