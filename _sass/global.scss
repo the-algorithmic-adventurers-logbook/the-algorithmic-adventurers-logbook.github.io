@@ -1,0 +1,73 @@
+@import "fonts";
+
+// Banner Colors
+
+$banner_background_image: url(../images/banner/noise_0.png);
+$banner_background_color: #4276B6;
+$banner_border_color: darken($banner_background_color, 10%);
+$banner_title_color: darken($banner_background_color, 20%);
+$banner_height: 100px;
+
+// Page colors
+
+$page_background_image: url(../images/background_noise.png);
+$page_background_color: #EEE;
+$page_font_color: #333;
+
+// The page banner
+header#banner
+{
+  // The banner is over everything in the page
+  z-index: 100;
+  // The banner will never move
+  position: fixed;
+  // It covers the whole page width
+  top: 0;
+  left: 0;
+  width: 100%;
+  // The background noisy image
+  background-image: $banner_background_image;
+  // The background color to blend with the noise
+  background-color: $banner_background_color;
+  // The banner height is 10% of the page
+  height: $banner_height;
+  // The title is centered
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // The shadow of the banner
+  box-shadow: 1px 0px 10px rgba(0,0,0,.75);
+  // The border of the banner
+  border-style: solid;
+  border-width: 0px 0px 2px 0px;
+  border-color: $banner_border_color;
+
+  // The page title
+  a
+  {
+    font: 40px/48px 'Copse', serif;
+    color: #f3f3f3;
+    text-shadow: 0px 2px 0px darken($banner_background_color, 20%);
+		text-decoration: none;
+  }
+}
+
+// The page itself
+body
+{
+  font:14px/22px 'Quattrocento Sans', sans-serif;
+	// Default text color
+  color:#333;
+	// The background noisy image
+  background-image: $page_background_image;
+	// The background color to blend with the noise
+  background-color: $page_background_color;
+	// The background should not scroll with the rest of the page
+	background-attachment: fixed;
+}
+
+// The page footer
+footer
+{
+  text-align: center;
+}

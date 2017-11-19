@@ -4,8 +4,8 @@
   <!-- Page Configuration -->
   <head>
 
-    <!-- Cascading Style Sheets (CSS) for Article -->
-    <link rel="stylesheet" href="/assets/css/article_style.css"/>
+    <!-- Cascading Style Sheets (CSS) for the content -->
+    <link rel="stylesheet" href="/assets/css/{{ layout.style }}.css"/>
   </head>
 
   <!-- Page Content -->
@@ -13,7 +13,7 @@
 
     <!-- Page Title -->
     <header id=banner>
-      <h1> {{ site.title }} </h1>
+      <a href="{{ site.url }}"> {{ site.title }} </a>
     </header>
 
 		<div>
@@ -24,7 +24,8 @@
       <footer>
         <p>
           <small>
-            Hosted on GitHub Pages
+            Hosted on GitHub Pages. Check the repository
+            <a href= "{{ site.github_repo }}"> here </a>
           </small>
         </p>
       </footer>

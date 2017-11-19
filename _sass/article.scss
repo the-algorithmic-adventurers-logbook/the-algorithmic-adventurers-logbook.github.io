@@ -1,19 +1,5 @@
-@import "fonts";
 @import "monokai";
-
-// Banner Colors
-
-$banner_background_image: url(../images/banner/noise_0.png);
-$banner_background_color: #4276B6;
-$banner_border_color: darken($banner_background_color, 10%);
-$banner_title_color: darken($banner_background_color, 20%);
-$banner_height: 100px;
-
-// Page colors
-
-$page_background_image: url(../images/background_noise.png);
-$page_background_color: #EEE;
-$page_font_color: #333;
+@import "global";
 
 // Article
 
@@ -21,51 +7,7 @@ $article_position: $banner_height + 30px;
 $article_background_color: #FBFBFB;
 $article_border_color: darken($article_background_color, 20%);
 
-// The page banner
-header#banner
-{
-  // The banner is over everything in the page
-  z-index: 100;
-  // The banner will never move
-  position: fixed;
-  // It covers the whole page width
-  top: 0;
-  left: 0;
-  width: 100%;
-  // The background noisy image
-  background-image: $banner_background_image;
-  // The background color to blend with the noise
-  background-color: $banner_background_color;
-  // The banner height is 10% of the page
-  height: $banner_height;
-  // The title is centered
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  // The shadow of the banner
-  box-shadow: 1px 0px 10px rgba(0,0,0,.75);
-  // The border of the banner
-  border-style: solid;
-  border-width: 0px 0px 2px 0px;
-  border-color: $banner_border_color;
-
-  // The page title
-  h1
-  {
-    font: 40px/48px 'Copse', serif;
-    color: #f3f3f3;
-    text-shadow: 0px 2px 0px darken($banner_background_color, 20%);
-  }
-}
-
-// The page itself
-body
-{
-  font:14px/22px 'Quattrocento Sans', sans-serif;
-  color:#333;
-  background-image: $page_background_image;
-  background-color: $page_background_color;
-}
+$table_border_color: lighten($banner_background_color, 20%);
 
 // The text area container
 div#container
@@ -96,11 +38,81 @@ div#container
     {
       text-align: justify;
     }
-  }
-}
 
-// The page footer
-footer
-{
-  text-align: center;
+    // Should you use an image, it shall not exceed the sheet size
+    img
+    {
+      max-width: 100%;
+    }
+
+    // Markdown quote
+    blockquote
+    {
+      border-left:1px solid $banner_background_color;
+      margin:0;
+      padding:0 0 0 20px;
+      font-style:italic;
+    }
+
+    // Code blocks
+    code
+    {
+      font-family: 'Lucida Sans', Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
+      font-size:13px;
+      color:#efefef;
+      text-shadow: 0px 1px 0px #000;
+      margin: 0 4px;
+      padding: 2px 6px;
+      background: #333;
+      border-radius: 2px;
+    }
+
+    // Text code blocks
+    pre.highlight
+    {
+      padding:8px 15px;
+      background: #333333;
+      border-radius: 3px;
+      border:1px solid #c7c7c7;
+      overflow: auto;
+      overflow-y: hidden;
+
+      code
+      {
+        margin: 0px;
+        padding: 0px;
+      }
+    }
+
+    // Markdown tables
+    table
+    {
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    // Table header
+    th
+    {
+      text-align: center;
+      padding:5px 10px;
+      border: 1px solid $table_border_color;
+      border-bottom-width: 2px;
+      color: #444;
+    }
+
+    // Table data
+    td
+    {
+      text-align:left;
+      padding:5px 10px;
+      border-bottom:1px solid $table_border_color;
+      border-right: 1px solid $table_border_color;
+
+      &:first-child
+      {
+        border-left: 1px solid $table_border_color;
+      }
+    }
+  }
 }

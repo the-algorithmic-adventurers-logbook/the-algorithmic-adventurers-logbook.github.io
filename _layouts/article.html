@@ -1,40 +1,15 @@
-<!doctype html>
-<html>
+---
+layout: global
+style: article
+---
 
-  <!-- Page Configuration -->
-  <head>
+<!-- Zone where the page content will appear -->
+<div id=container>
 
-    <!-- Cascading Style Sheets (CSS) for Article -->
-    <link rel="stylesheet" href="/assets/css/article_style.css"/>
+  <!-- The zone where the article goes, structured as a paper sheet -->
+  <section id=article>
 
-  </head>
-
-  <!-- Page Content -->
-  <body>
-
-    <!-- Page Title -->
-    <header id=banner>
-      <h1> {{ site.title }} </h1>
-    </header>
-
-    <!-- Zone where the page content will appear -->
-    <div id=container>
-
-      <!-- The zone where the article goes, structured as a paper sheet -->
-      <section id=article>
-
-        <!-- LIQUID: Import the article content -->
-        {{ content }}
-      </section>
-
-      <!-- Page footer after the article ends -->
-      <footer>
-        <p>
-          <small>
-            Hosted on GitHub Pages
-          </small>
-        </p>
-      </footer>
-    </div>
-  </body>
-</html>
+    <!-- LIQUID: Import the article content -->
+    {{ content }}
+  </section>
+</div>
