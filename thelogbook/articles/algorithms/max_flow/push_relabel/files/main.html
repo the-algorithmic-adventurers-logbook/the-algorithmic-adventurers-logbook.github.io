@@ -1,0 +1,588 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ELI11</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src='https://d3js.org/d3.v5.min.js' charset='utf-8'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-beta/katex.min.css" integrity="sha384-L/SNYu0HM7XECWBeshTGLluQO9uVI1tvkCtunuoUbCHHoTH76cDyXty69Bb9I0qZ"
+        crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-beta/katex.min.js" integrity="sha384-ad+n9lzhJjYgO67lARKETJH6WuQVDDlRfj81AJJSswMyMkXTD49wBj5EP004WOY6"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./vendors/pseudocode.js-1.1/pseudocode.min.css" type="text/css">
+    <script src="./vendors/pseudocode.js-1.1/pseudocode.js" type="text/javascript"></script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+
+
+<body>
+
+    <h1>Cubriendo la Grilla con Push/Relabel</h1>
+    <h5 class="author">By ELI11</h5>
+
+    <div>
+        <p>
+            Muchos problemas que inicialmente parecen combinatoriales pueden
+            ser resueltos de manera eficiente si son modelados de manera inteligente.
+            A continuación se presenta un problema que inicialmente parece ser exponencial,
+            pero que puede ser modelado como un problema de flujo máximo para obtener una
+            solución polinomial.
+        </p>
+    </div>
+
+
+    <h2>El Problema</h2>
+
+    <div>
+        <p>
+            El problema es el siguiente: dada una grilla de <em property="italic">n</em> filas y <em property="italic">m</em>
+            columnas donde ciertas posiciones están
+            bloqueadas, ¿Es posible cubrir
+            la grilla utilizando dominós? Tomemos por ejemplo la siguiente grilla, donde las posiciones en naranjo
+            estan bloqueadas. ¿Puedes cubrir
+            todas las posiciones no bloqueadas utilizando los dominós? Prueba arrastrando los dominós de la derecha
+            sobre la grilla para cubrirla.
+        </p>
+    </div>
+
+    <div id='visualization1' style="width:50%; margin: 50px auto 50px auto;">
+        <svg id="board1">
+            <defs>
+                <g id="v_domino1">
+                    <rect class="v_shape1 domino">
+                    </rect>
+                </g>
+                <g id="h_domino1">
+                    <rect class="h_shape1 domino">
+                    </rect>
+                </g>
+            </defs>
+        </svg>
+    </div>
+
+    <div>
+        <p>
+            No pareciera ser posible cubrir la grilla anterior. Sin embargo, demostrar esto no es trivial. Como se dijo
+            al comienzo, la estrategia
+            que seguiremos será modelar el problema como un problema de flujo máximo en un grafo.
+        </p>
+    </div>
+
+    <h2>Modelamiento</h2>
+
+    <div>
+        <p>
+            La modelación es como sigue: cada celda de la grilla representa un nodo. Los nodos que están en una
+            diagonal par (fila + columna es divisible por 2) se conectan con la
+            fuente, mientras que los nodos que están en una diagonal impar se conectan con el sumidero. Además, dos
+            nodos se conectan entre ellos
+            si y solo si representan celdas adyacentes en la grilla, y la dirección de la arista va desde el nodo
+            asociado a una diagonal par hacia
+            el nodo asociado a una diagonal impar. La capacidad de cada arista es 1 y los nodos asociados a celdas
+            bloqueadas no tienen aristas. Luego, el tablero puede ser
+            cubierto con dominós si y solo si
+            el flujo máximo desde la fuente al sumidero es igual a la mitad de las celdas no bloqueadas.
+        </p>
+
+        <p>
+            La siguiente visualización muestra la modelación descrita anteriormente. A la izquierda se encuentra la
+            grilla, mientras que a
+            la derecha se encuentra el grafo que deriva de ella. Para simplificar el grafo, se asume que las aristas
+            van de izquierda a derecha,
+            y la capacidad de cada arista es 1. Al mover el cursor sobre una celda de la grilla se hace resaltar el
+            nodo correspondiente en el grafo.
+            Además, se puede hacer doble click sobre las celdas para bloquearlas/desbloquearlas. Por último, al colocar
+            un dominó se representa el
+            flujo en el grafo resaltando las aristas correspondientes con color morado (por ejemplo, al colocar un
+            dominó vertical sobre las celdas 2 y 7, se resalta el camino fuente-2-7-sumidero).
+        </p>
+    </div>
+
+    <div id='visualization2' style="width:100%; height:450px; margin: 50px auto 50px auto;">
+
+        <div style='float:left;'>
+            <svg id="board">
+                <defs>
+                    <g id="v_domino">
+                        <rect class="v_shape domino">
+                        </rect>
+                    </g>
+                    <g id="h_domino">
+                        <rect class="h_shape domino">
+                        </rect>
+                    </g>
+                </defs>
+            </svg>
+        </div>
+
+        <div id='container' style='float:right;'></div>
+    </div>
+
+    <h2 style="margin-top: 60px;">¿Por qué funciona?</h2>
+
+    <div>
+        <p>
+            Consideremos las celdas que estan en una diagonal par. Lo primero es notar estos nodos tienen una única
+            arista de entrada, la que se conecta
+            a la fuente con una capacidad igual a 1. Esto hace respetar la restricción de que cada una de estas celdas
+            es ocupada por a lo más un
+            dominó, puesto que no puede pasar más que una unidad de flujo por ese nodo. Luego ese flujo pasa por uno de
+            los nodos asociados a una diagonal
+            impar para luego irse al sumidero.
+        </p>
+
+        <p>
+            Ahora consideremos los nodos asociados a una diagonal impar. Análogo a lo anterior, estos nodos tiene solo
+            una arista de salida, la que se
+            conecta al sumidero con una capacidad igual a 1. Esto restringe a que estas celdas también sean ocupadas
+            por a lo más un nodo.
+        </p>
+
+        <p>
+            Falta verificar que el flujo representa una configuración válida de dominós y que no se está colocando un
+            dominó "partido en 2" ocupando
+            celdas no adyacentes. Esta restricción se respeta por el hecho de que solo nodos asociados a celdas
+            adyacentes están conectados en el grafo.
+        </p>
+
+        <p>
+            Por último, falta justificar cómo se determina que el tablero completo puede ser cubierto. Esto es simple:
+            cada unidad de flujo desde la
+            fuente al sumidero representa un dominó, lo que cubre dos celdas. Por lo tanto, para cubrir todas las
+            celdas se necesita que el flujo máximo
+            sea igual a la mitad del número de celdas.
+        </p>
+    </div>
+
+    <h3>Volviendo a la instancia inicial del problema...</h3>
+
+    <div>
+        <p>
+            La siguiente visualización muestra la instancia del problema que atacamos al comienzo junto con su
+            modelación como grafo. ¿Es posible mediante inspección del grafo determinar que la grilla no puede ser
+            cubierta? Intenta rellenar la grilla y observa que sucede con el flujo en el grafo.
+        </p>
+    </div>
+
+    <div id='visualization3' style="width:100%; height:450px; margin: 50px auto 50px auto;">
+
+        <div style='float:left;'>
+            <svg id="board3">
+                <defs>
+                    <g id="v_domino">
+                        <rect class="v_shape domino">
+                        </rect>
+                    </g>
+                    <g id="h_domino">
+                        <rect class="h_shape domino">
+                        </rect>
+                    </g>
+                </defs>
+            </svg>
+        </div>
+
+        <div id='container3' style='float:right;'></div>
+    </div>
+
+    <div>
+        <p>
+            La respuesta es que al sumidero solo llegan 9 aristas (cada una con capacidad 1), por lo que el flujo
+            máximo es menor o igual a 9. Sin embargo,
+            hay 20 celdas no bloqueadas, por lo que necesitaríamos que el flujo máximo sea 10 para poder cubrir la
+            grilla. Esto implica que la grilla no puede ser cubierta.
+        </p>
+        <p>
+            Sin embargo, esta simple inspección del grafo no funciona en todos los casos. Tomemos por ejemplo
+            la siguiente instancia:
+        </p>
+    </div>
+
+    <div id='visualization4' style="width:100%; height:450px; margin: 50px auto 50px auto;">
+
+        <div style='float:left;'>
+            <svg id="board4">
+                <defs>
+                    <g id="v_domino">
+                        <rect class="v_shape domino">
+                        </rect>
+                    </g>
+                    <g id="h_domino">
+                        <rect class="h_shape domino">
+                        </rect>
+                    </g>
+                </defs>
+            </svg>
+        </div>
+
+        <div id='container4' style='float:right;'></div>
+    </div>
+
+    <div>
+        <p>
+            El test anterior entrega que la grilla sí puede ser cubierta, pero esto es falso. Necesitamos un
+            método
+            más sofisticado para determinar el valor del flujo máximo.
+        </p>
+    </div>
+
+    <h2>Push/Relabel</h2>
+
+    <div>
+        <p>
+            A diferencia de los algoritmos basados en el método de Ford y Fulkerson, los algoritmos basados en
+            push/relabel no mantienen siempre un flujo válido por el grafo.
+            En cambio, estos algoritmos no respetan la "conservación" del fluido, es decir, los nodos pueden recibir
+            más fluido que el que sale de ellos - pueden tener un exceso de flujo.
+            Al igual que los algoritmos basados en Ford y Fulkerson, los algoritmos basados en push/relabel trabajan
+            sobre el grafo de capacidades residuales, es decir, al enviar c unidades de
+            flujo desde u hasta v, se agregan c unidades de capacidad a la arista que va desde v hasta u.
+
+        </p>
+        <p>
+            La intuición detrás de los métodos de push/relabel se pueden entender en términos de fluidos. Las aristas
+            representan cañerías entre los vertices.
+            Por el otro lado, los vertices representan un estanque de fluido arbitrariamente grande, el cual guarda el
+            exceso de flujo del vertice. Cada vertice
+            (estanque) se ubica a una determinada altura, la cual va aumentando a lo largo del algoritmo.
+        </p>
+        <p>
+            La altura de los vértices determina como el flujo se mueve por la red: solo se 'empuja' fluido cuesta
+            abajo, es decir, desde vértices más altos a vértices más bajos.
+            Esta operación se llama <b>push</b>. El flujo puede ir cuesta arriba, pero las operaciones del algoritmo
+            solo empujan el flujo cuesta abajo. El vértice fuente tiene una altura fija en N (el número de nodos
+            de la red), mientras que todos los otros vértices parten con altura 0.
+        </p>
+
+        <p>
+            Inicialmente el algoritmo envía todo el fluido posible desde las cañerías que salen de la fuente. Ese
+            fluido se acumula en los vertices a donde llegan esas cañerías y eventualmente
+            se continua empujando cuesta abajo hacia el sumidero. Si un vertice intermedio contiene fluido en su
+            estanque pero solo se conecta con vertices con altura superior, entonces la altura
+            de ese vertice debe ser aumentada. Esta operacion se llama <b>relabel</b>, y consiste en aumentar la altura
+            de un vértice a una unidad más que la altura del más bajo de sus vecinos
+            hacia el que se puede empujar fluido.
+        </p>
+
+        <p>
+            Eventualmente todo el fluido que podía llegar al sumidero ha llegado a él. Para hacer que el flujo sea
+            'legal' y se respete que todo el fluido que entra a un nodo también
+            salga de él, lo que sucede es que los vertices intermedios del grafo siguen aumentando su altura hasta que
+            eventualmente se ubican por sobre la fuente. Una vez llegado a ese punto,
+            el exceso de flujo que quedaba en los estanques empieza a fluir de vuelta hacia la fuente. La respuesta
+            final
+            del algoritmo (osea, el flujo máximo) es igual al exceso de flujo en el sumidero al finalizar.
+        </p>
+    </div>
+
+    <h2>Operaciones</h2>
+    <div>
+        <p>
+            Ya entregada la intuición detras de los algoritmos de push/relabel se procede a entregar el pseudocódigo.
+            Algunos comentarios sobre la notación:
+        </p>
+        <ol>
+            <li>El grafo se representa como una tupla \(G=V,E\), donde \(V\) es el conjunto de vértices y \(E \subseteq
+                V \times V\) es el conjunto de aristas.</li>
+            <li>Dado un vértice \(u\), \(u.e\) entrega el exceso de flujo en el vertice y \(u.h\) entrega la altura del
+                vértice..</li>
+            <li>
+                Dado vértices \(u\) y \(v\), \((u,v)\) representa la arista entre \(u\) y \(v\). \((u,v).c\) representa
+                la capacidad
+                de dicha arista.
+            </li>
+        </ol>
+        <p>
+            Algunos detalles sobre la visualización:
+        </p>
+        <ol>
+            <li>
+                El eje y representa el identificador del nodo. El eje x representa la altura del nodo.
+            </li>
+            <li>
+                El color del nodo indica el exceso de flujo que posee
+            </li>
+            <li>
+                Las aristas con capacidad 0 no se muestran en el grafico. Las aristas que sí se muestran tienen
+                capacidad 1.
+            </li>
+            <li>
+                Los nodos fuente y sumidero son de color azul pues su exceso de flujo puede tomar valores arbitrarios.
+            </li>
+        </ol>
+    </div>
+    </div>
+    <div>
+        <h3>• Push</h3>
+        <div class="demo-grid-wrapper">
+            <div class="code">
+                <p>
+                    Esta operación toma vértices \(u\) y \(v\), y es válida solo cuando \(u\) tiene exceso de flujo,
+                    \((u,v).c\) es mayor a 0 y \(u.h = u.v+1\). Su acción es mover todo el flujo
+                    posible desde \(u\) hacia \(v\).
+                </p>
+                <div id="push-pseudocode-container"></div>
+                <div id="push-pseudocode" style="display:none">
+                    \begin{algorithmic}
+                    \PROCEDURE{Push}{$u,v$}
+                    \State $\Delta = min(u.e,(u,v).c)$
+                    \State $(u,v).c = (u,v).c - \Delta$
+                    \State $(v,u).c = (v,u).c + \Delta$
+                    \State $u.e = u.e - \Delta$
+                    \State $v.e = v.e - \Delta$
+                    \ENDPROCEDURE
+                    \end{algorithmic}
+                </div>
+                <p>En el ejemplo se hace push desde el nodo 3 al 2.</p>
+                <script type="text/javascript">
+                    var testExamples = document.getElementById("push-pseudocode").textContent;
+                    pseudocode.render(testExamples, document.querySelector("#push-pseudocode-container"), {
+                        lineNumber: false,
+                        noEnd: true
+                    });
+                </script>
+            </div>
+            <div id="push-demo">
+                <svg id="push-levels">
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>• Relabel</h3>
+        <div class="demo-grid-wrapper">
+            <div class="code">
+                <p>
+                    Esta operación toma un vértice \(u\), y es válida solo cuando todos los vértices \(v\) tales que
+                    \((u,v)>0\) tienen \(v.h \geq u.h\). Su acción es mover el nodo a una altura
+                    una unidad mayor que el más bajo de sus vecinos.
+                </p>
+                <div id="relabel-pseudocode-container"></div>
+                <div id="relabel-pseudocode" style="display:none">
+                    \begin{algorithmic}
+                    \PROCEDURE{Relabel}{$u$}
+                    \State $u.h = 1+min\{v.h \mid (u,v) \in E \land (u,v).c > 0\}$
+                    \ENDPROCEDURE
+                    \end{algorithmic}
+                </div>
+                <p>En el ejemplo se hace relabel del nodo 3.</p>
+                <script type="text/javascript">
+                    var testExamples = document.getElementById("relabel-pseudocode").textContent;
+                    pseudocode.render(testExamples, document.querySelector("#relabel-pseudocode-container"), {
+                        lineNumber: false,
+                        noEnd: true
+                    });
+                </script>
+            </div>
+            <div id="relabel-demo">
+                <svg id="relabel-levels">
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>• InitializePreflow</h3>
+        <div class="demo-grid-wrapper">
+            <div class="code">
+                <p>
+                    Esta operación se aplica solamente al comienzo del algoritmo. Lo que hace es empujar todo el flujo
+                    posible
+                    desde la fuente hacia sus vecinos y setear la altura de cada vértice a la distancia entre el
+                    vértice
+                    y el sumidero.
+                </p>
+                <div id="init-preflow-pseudocode-container"></div>
+                <div id="init-preflow-pseudocode" style="display:none">
+                    \begin{algorithmic}
+                    \PROCEDURE{InitializePreflow}{$G,s$}
+                    \For{each vertex $v \in G.V$}
+                    \State $v.h = dist(v,t)$
+                    \State $v.e = 0$
+                    \EndFor
+                    \State $s.h = |G.V|$
+                    \For{each vertex $v \in s.neighbors$}
+                    \State $s.e = s.e - (s,v).c$
+                    \State $v.e = v.e + (s,v).c$
+                    \State $(v,s).c = (s,v).c$
+                    \State $(s,v).c = 0$
+                    \EndFor
+                    \ENDPROCEDURE
+                    \end{algorithmic}
+                </div>
+                <script type="text/javascript">
+                    var testExamples = document.getElementById("init-preflow-pseudocode").textContent;
+                    pseudocode.render(testExamples, document.querySelector("#init-preflow-pseudocode-container"), {
+                        lineNumber: false,
+                        noEnd: true
+                    });
+                </script>
+            </div>
+            <div id="preflow-demo" , style="padding-top: 30px;">
+                <svg id="preflow-levels">
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3>• PushRelabel</h3>
+        <div class="demo-grid-wrapper">
+            <div class="code">
+                <p>
+                    Este es el loop principal del algoritmo.
+                </p>
+                <div id="main-loop-pseudocode-container"></div>
+                <div id="main-loop-pseudocode" style="display:none">
+                    \begin{algorithmic}
+                    \PROCEDURE{PushRelabel}{$G$}
+                    \State InitializePreflow$(G, s)$
+                    \While{there exists an applicable push or relabel operation}
+                    \State select a push or relabel operation and perform it
+                    \EndWhile
+                    \State \Return $t.e$
+                    \ENDPROCEDURE
+                    \end{algorithmic}
+                </div>
+                <script type="text/javascript">
+                    var testExamples = document.getElementById("main-loop-pseudocode").textContent;
+                    pseudocode.render(testExamples, document.querySelector("#main-loop-pseudocode-container"), {
+                        lineNumber: false,
+                        noEnd: true
+                    });
+                </script>
+                <p>
+                    El ejemplo muestra la ejecución completa del algoritmo sobre un grafo cualquiera.
+                </p>
+            </div>
+            <div id="main-loop-demo" , style="padding-top: 30px;">
+                <svg id="main-loop-levels">
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <h2> Volviendo al problema de los dominos... </h2>
+
+    <div>
+        <p>Volvamos a la última instancia del problema de los dominós:</p>
+    </div>
+
+    <div id='visualization11' style="width:100%; height:450px; margin: 50px auto 50px auto;">
+
+        <div style='float:left;'>
+            <svg id="board11">
+                <defs>
+                    <g id="v_domino">
+                        <rect class="v_shape domino">
+                        </rect>
+                    </g>
+                    <g id="h_domino">
+                        <rect class="h_shape domino">
+                        </rect>
+                    </g>
+                </defs>
+            </svg>
+        </div>
+
+        <div id='container11' style='float:right;'></div>
+    </div>
+
+    <div>
+        <p>
+            Claramente no es posible cubrir la grilla de dominós en esta instancia del problema. Sin embargo,
+            analizando el grafo resultante no es fácil determinar esto.
+            Ejecutemos el algoritmo de Push/Relabel sobre el grafo y veamos que sucede:
+        </p>
+    </div>
+
+    <div id='visualization5' style="width:100%; height:550px; margin: 50px auto 50px auto;">
+        <div id='container5'>
+            <svg id="container5-levels">
+            </svg></div>
+    </div>
+
+    <div>
+        <p>
+            Podemos ver que el flujo máximo es 3, pero necesitamos un flujo de 4 para cubrir las 4 celdas libres de la
+            grilla. Por lo tanto, esta instancia es imposible de resolver.
+            La solución encontrada por push/relabel es:
+        </p>
+    </div>
+
+    <div id='visualization12' style="width:270; margin: 0px auto 50px auto;">
+        <svg id="board12">
+            <defs>
+                <g id="v_domino12">
+                    <rect class="v_shape12 domino">
+                    </rect>
+                </g>
+                <g id="h_domino12">
+                    <rect class="h_shape12 domino">
+                    </rect>
+                </g>
+            </defs>
+        </svg>
+    </div>
+
+    <h2>Conclusión</h2>
+
+    <p>
+        Se presentó un problema que inicialmente parecía requerir backtracking para resolverse, y se explicó la
+        modelación del problema como un problema de flujo máximo.
+        Además, se presentó un algoritmo eficiente para resolver el problema de flujo máximo: dependiendo de las
+        estructuras de datos utilizadas (no exploradas acá), el algoritmo
+        puede funcionar en \(O(V^3)\), lo que es considerablemente mejor que el algoritmo de Ford y Fulkerson plano (el
+        cual es exponencial).
+    </p>
+    <p>
+        Para más detalles sobre el tiempo de ejecución del algoritmo y su correctitud, sugerimos leer 'Introduction to
+        Algorithms' de Cormen et. al.
+    </p>
+
+
+    <!-- <div id='visualization5' style="width:100%; height:450px; margin: 50px auto 50px auto;">
+
+        <div style='float:left;'>
+            <svg id="board5">
+                <defs>
+                    <g id="v_domino">
+                        <rect class="v_shape domino">
+                        </rect>
+                    </g>
+                    <g id="h_domino">
+                        <rect class="h_shape domino">
+                        </rect>
+                    </g>
+                </defs>
+            </svg>
+        </div>
+
+        <div id='container5' style='float:right;'></div>
+    </div> -->
+
+
+    <!-- <div id='visualization6' style="width:50%;">
+        <svg id="levels">
+        </svg>
+    </div> -->
+
+
+
+    <script src='vis1.js' charset='utf-8'></script>
+    <script src='vis2.js' charset='utf-8'></script>
+    <script src='vis3.js' charset='utf-8'></script>
+    <script src='vis4.js' charset='utf-8'></script>
+    <!-- <script src='vis5.js' charset='utf-8'></script> -->
+    <script src='vis6.js' charset='utf-8'></script>
+    <script src='vis7.js' charset='utf-8'></script>
+    <script src='vis8.js' charset='utf-8'></script>
+    <script src='vis9.js' charset='utf-8'></script>
+    <script src='vis10.js' charset='utf-8'></script>
+    <script src='vis11.js' charset='utf-8'></script>
+    <script src='vis12.js' charset='utf-8'></script>
+</body>
+
+</html>

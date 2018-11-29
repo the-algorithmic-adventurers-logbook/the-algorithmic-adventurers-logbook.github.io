@@ -1,0 +1,86 @@
+body {
+    margin: 4em auto 4em auto;
+    max-width: 975px;
+    font-family: sans-serif;
+}
+
+.author {
+    margin: -18px 0 50px 20px;
+}
+
+h1 {
+    font-size: 52px;
+}
+
+h2 {
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+h3 {
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 18px;
+    text-align: justify;
+}
+
+circle {
+    stroke: white;
+    stroke-width: 2px;
+}
+
+.circle-active {
+    fill: rgb(81, 194, 77);
+}
+
+.circle-inactive {
+    fill: rgb(255, 119, 56);
+}
+
+line {
+    stroke: #9ECAE1;
+    stroke-width: 2px;
+}
+
+text {
+    fill: white;
+    font-weight: bold;
+    text-anchor: middle;
+}
+
+.axis text {
+    fill: black;
+}
+
+.main-body {
+    width: 65%;
+    margin: 0 auto;
+}
+
+.square {
+    stroke-width: 1px;
+}
+
+svg text {
+    pointer-events: none;
+}
+
+/* 
+.domino {
+    stroke-width: 1px;
+    stroke: black;
+} */
+
+.demo-grid-wrapper{
+    display: grid;
+    grid-template-columns: 425px 550px;
+    column-gap: 10px;
+    row-gap: 16px;
+}
+
+.ps-algorithmic{
+    margin-left: -1.2em;
+}
